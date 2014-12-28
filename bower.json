@@ -1,0 +1,16 @@
+{
+  "name": "chess",
+  "version": "0.0.1",
+  "authors": [
+    "Yaroslav Bigus"
+  ],
+  "description": "chess",
+  "main": "world.js",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "underscore": "~1.7.0",
+    "jquery": "~2.1.1",
+    "threejs": "*"
+  }
+}

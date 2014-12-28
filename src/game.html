@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Chess</title>
+	<style>
+		body{margin:0px; padding: 0px;}
+	</style>
+</head>
+<body>
+	<div id="chess"></div>
+	<script type="text/javascript" src="lib/jquery.js"></script>
+	<script type="text/javascript" src="lib/underscore.js"></script>
+	<script type="text/javascript" src="lib/three.js"></script>
+  	
+	<!--<script type="text/javascript" src="app/app.min.js"></script>  	-->
+	<script type="text/javascript" src="app/messages.js"></script>
+	<script type="text/javascript" src="app/game.js"></script>
+	<script type="text/javascript" src="app/pieces.js"></script>
+	<script type="text/javascript" src="app/world.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function(){			
+			//world().initWorld();
+			world().loadModels();
+		});
+	</script>
+</body>
+</html>
