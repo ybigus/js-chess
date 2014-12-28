@@ -103,28 +103,25 @@ var game=function(){
 			}
 		},
 		checkForMate: function(){
+            var is_king_save = this.isKingSafe();
 			for(var x=0; x<board.length; x++){
 				for(var y=0; y<board[x].length; y++){
 					if(board[x][y] != null && board[x][y].color == current){
-						var available_moves = pieces().getAvailableMoves(x,y);
-						for(var i=0; i<available_moves.length; i++){
-							var is_available = _.find(available_moves, function(cell){
-								return cell.x == x && cell.y == y;
-							});
-							if(is_available){
-								var from_cell = board[x][y];
-								var to_cell = board[newX][newY];
-								board[newX][newY] = board[x][y];
-								board[x][y] = null;
-								if(this.isKingSafe()){
-									board[newX][newY] = to_cell;
-									board[x][y] = from_cell;
-									return true;
-								}
-								board[newX][newY] = to_cell;
-								board[x][y] = from_cell;
-							}
-						}
+						var available_moves = pieces().getAvailableMoves(x,y, is_king_save);
+                        
+                        for(var i=0; i<available_moves.length; i++){
+                            var from_cell = board[x][y];
+                            var to_cell = board[available_moves[i].x][available_moves[i].y];
+                            board[available_moves[i].x][available_moves[i].y] = board[x][y];
+                            board[x][y] = null;
+                            if(this.isKingSafe()){
+                                board[available_moves[i].x][available_moves[i].y] = to_cell;
+                                board[x][y] = from_cell;
+                                return true;
+                            }
+                            board[available_moves[i].x][available_moves[i].y] = to_cell;
+                            board[x][y] = from_cell;
+                        }
 					}
 				}
 			}

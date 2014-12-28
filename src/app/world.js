@@ -5,7 +5,7 @@ var passant_capture_w, passant_capture_b;
 var board;
 
 var world=function(){
-	var renderer, scene, camera, projector;
+	var renderer, scene, camera;
 	var cells = [], pieces = [], pieces_models = {};
 	return {
 		initWorld: function(){
@@ -100,6 +100,14 @@ var world=function(){
 								castling_piece.position.x = -result.castling.newX*50;
 								castling_piece.position.z = -result.castling.newY*50;
 							}
+                            if(result.game_finished){
+                                if(result.draw){
+                                    console.log('Draw!');
+                                }
+                                else{
+                                    console.log(current == 'w'? 'Black win' : 'White win');
+                                }
+                            }
 						}
 						else{
 							if(result.alert){
