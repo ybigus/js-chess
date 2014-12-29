@@ -14,7 +14,7 @@ var world=function(){
 			var width = window.innerWidth, height = window.innerHeight;
 			var view_angle = 45, aspect = width/height, near = 0.1, far = 1000;
 			var mouse = { x: 0, y: 0 }
-			renderer = new THREE.WebGLRenderer();
+			renderer = new THREE.WebGLRenderer({ antialias: true });
 			camera = new THREE.PerspectiveCamera(view_angle, aspect, near, far);
 			scene = new THREE.Scene();
 			scene.add(camera);
