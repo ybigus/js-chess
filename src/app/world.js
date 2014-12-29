@@ -5,7 +5,7 @@ var passant_capture_w, passant_capture_b;
 var board;
 
 var world=function(){
-	var renderer, scene, camera;
+	var renderer, scene, camera, light;
 	var cells = [], pieces = [], pieces_models = {};
 	return {
 		initWorld: function(){
@@ -20,6 +20,10 @@ var world=function(){
 			scene.add(camera);
 			camera.position.set(200, 500, -250);
 			camera.lookAt(new THREE.Vector3(-200, 0, -200));
+
+            light = new THREE.DirectionalLight( 0xb4e7f2, 0.8 );
+            light.position.set(-200, 500, -200);
+            scene.add(light);
 			
 			for(var i=0; i<8; i++){
 				var isWhite = i % 2 != 0;
@@ -129,7 +133,7 @@ var world=function(){
         		var raycaster = new THREE.Raycaster(camera.position, mouse3D);
 				var intersects = raycaster.intersectObjects(cells);
 				for(var i=0; i<cells.length; i++){
-					var currentColor = cells[i].isWhite ? 0xffffff : 0x000000;
+					var currentColor = cells[i].isWhite ? 0xDDC5A0 : 0x9D7D40;
 					if(!cells[i].isSelected){
 						cells[i].material.color.setHex(currentColor);
 					}
@@ -208,8 +212,8 @@ var world=function(){
 			for(var i=0; i<8; i++){
 				for(var j=0; j<8; j++){
 					if(board[i][j] != null){
-						var pieceColor = board[i][j].color == 'w' ? 0xf9e17e : 0x542217;
-						var pieceMaterial = new THREE.MeshBasicMaterial({color: pieceColor});
+						var pieceColor = board[i][j].color == 'w' ? 0xffffff : 0x000000;
+						var pieceMaterial = new THREE.MeshPhongMaterial({color: pieceColor});
 						var piece = new THREE.Mesh(pieces_models[board[i][j].piece], pieceMaterial);
 						piece.position.x = -i*50;
 						piece.position.z = -j*50;
