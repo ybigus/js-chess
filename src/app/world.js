@@ -220,6 +220,7 @@ var world=function(){
 						scene.add(piece);
 						piece.x = i;
 						piece.y = j;
+                        piece.geometry.computeVertexNormals();
 						pieces.push(piece);
 					}
 				}
