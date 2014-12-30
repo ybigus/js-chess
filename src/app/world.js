@@ -18,7 +18,8 @@ var world=function(){
 			camera = new THREE.PerspectiveCamera(view_angle, aspect, near, far);
 			scene = new THREE.Scene();
 			scene.add(camera);
-			camera.position.set(200, 500, -250);
+			//camera.position.set(200, 500, -250);
+            camera.position.set(200, 500, -200);
 			camera.lookAt(new THREE.Vector3(-200, 0, -200));
 
             light = new THREE.DirectionalLight( 0xb4e7f2, 0.8 );
@@ -54,6 +55,32 @@ var world=function(){
 				mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
 				mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 			});
+
+            var angle = 0;
+            $(document).keydown(function(e){
+                switch(e.which){
+                    case 65:
+                        angle += 5;
+                        camera.position.x = -200 + 400 * Math.cos(Math.PI * angle / 180);
+                        camera.position.z = -200 + 400 * Math.sin(Math.PI * angle / 180);
+                        break;
+                    case 68:
+                        angle -= 5;
+                        camera.position.x = -200 + 400 * Math.cos(Math.PI * angle / 180);
+                        camera.position.z = -200 + 400 * Math.sin(Math.PI * angle / 180);
+                        break;
+                    case 87:
+                        if(camera.position.y < 540){
+                            camera.position.y += 20;
+                        }
+                        break;
+                    case 83:
+                        if(camera.position.y > 60){
+                            camera.position.y -= 20;
+                        }
+                        break;
+                }
+            });
 
 			$(document).mousedown(function(event){
 				var selected = -1, hovered = -1;
@@ -124,6 +151,7 @@ var world=function(){
 
 			var render = function(){
 				requestAnimationFrame(render);
+
 				camera.lookAt(new THREE.Vector3(-200, 0, -200));
 
 				var mouse3D = new THREE.Vector3(mouse.x, mouse.y, 0.5);
