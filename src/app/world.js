@@ -10,7 +10,7 @@ var world=function(){
 	return {
 		initWorld: function(){
 			var container = $('#chess');
-
+            var $this = this;
 			var width = window.innerWidth, height = window.innerHeight;
 			var view_angle = 45, aspect = width/height, near = 0.1, far = 1000;
 			var mouse = { x: 0, y: 0 }
@@ -18,7 +18,6 @@ var world=function(){
 			camera = new THREE.PerspectiveCamera(view_angle, aspect, near, far);
 			scene = new THREE.Scene();
 			scene.add(camera);
-			//camera.position.set(200, 500, -250);
             camera.position.set(200, 500, -200);
 			camera.lookAt(new THREE.Vector3(-200, 0, -200));
 
@@ -115,12 +114,21 @@ var world=function(){
 							var piece = _.find(pieces, function(item){
 								return item.x == x && item.y == y;
 							});
-							//TODO: pawn transform
 							//move piece
 							piece.x = newX;
 							piece.y = newY;
 							piece.position.x = -newX*50;
 							piece.position.z = -newY*50;
+                            //pawn transform
+                            if(result.transform){
+                                var pawn = _.find(pieces, function(item){
+                                    return item.x == result.transform.x && item.y == result.transform.y;
+                                });
+                                pieces = _.without(pieces, pawn);
+                                scene.remove(pawn);
+                                pawn = null;
+                                $this.buildPiece(result.transform.x, result.transform.y);
+                            }
 							//castling
 							if(result.castling){
 								var castling_piece = _.find(pieces, function(item){
@@ -185,6 +193,18 @@ var world=function(){
 			}
 			this.startGame();
 		},
+        buildPiece: function(x,y){
+            var pieceColor = board[x][y].color == 'w' ? 0xffffff : 0x000000;
+            var pieceMaterial = new THREE.MeshPhongMaterial({color: pieceColor});
+            var piece = new THREE.Mesh(pieces_models[board[x][y].piece], pieceMaterial);
+            piece.position.x = -x*50;
+            piece.position.z = -y*50;
+            scene.add(piece);
+            piece.x = x;
+            piece.y = y;
+            piece.geometry.computeVertexNormals();
+            pieces.push(piece);
+        },
 		loadModels: function(){
 			console.log('Initializing...');
 			var load_geometry = function(name){
@@ -240,16 +260,7 @@ var world=function(){
 			for(var i=0; i<8; i++){
 				for(var j=0; j<8; j++){
 					if(board[i][j] != null){
-						var pieceColor = board[i][j].color == 'w' ? 0xffffff : 0x000000;
-						var pieceMaterial = new THREE.MeshPhongMaterial({color: pieceColor});
-						var piece = new THREE.Mesh(pieces_models[board[i][j].piece], pieceMaterial);
-						piece.position.x = -i*50;
-						piece.position.z = -j*50;
-						scene.add(piece);
-						piece.x = i;
-						piece.y = j;
-                        piece.geometry.computeVertexNormals();
-						pieces.push(piece);
+						this.buildPiece(i,j);
 					}
 				}
 			}
