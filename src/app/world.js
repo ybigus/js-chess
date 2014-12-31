@@ -24,12 +24,21 @@ var world=function(){
             light = new THREE.DirectionalLight( 0xb4e7f2, 0.8 );
             light.position.set(-200, 500, -200);
             scene.add(light);
-			
+
+            //platform
+            var platformMaterial = new THREE.MeshLambertMaterial({color: 0x592A10});
+            var platformGeometry = new THREE.BoxGeometry(440,1,440);
+            var platform = new THREE.Mesh(platformGeometry, platformMaterial);
+            platform.position.x = -175;
+            platform.position.y = -1;
+            platform.position.z = -175;
+            scene.add(platform);
+
 			for(var i=0; i<8; i++){
 				var isWhite = i % 2 != 0;
 				for(var j=0; j<8; j++){
 					var cellGeometry = new THREE.BoxGeometry(50,1,50);
-					var currentColor = isWhite ? 0xffffff : 0x000000;
+                    var currentColor = isWhite ? 0xDDC5A0 : 0x9D7D40;
 					
 					var cellMaterial = new THREE.MeshBasicMaterial({color: currentColor});
 					var cell = new THREE.Mesh(cellGeometry, cellMaterial);
@@ -176,7 +185,7 @@ var world=function(){
 					cells[i].isHovered = false;
 				}
 		        if (intersects.length > 0) {
-		            intersects[0].object.material.color.setHex(0xff0000);
+		            intersects[0].object.material.color.setHex(0xB1FB98);
 		            intersects[0].object.isHovered = true;
 		        }
 
@@ -194,7 +203,7 @@ var world=function(){
 			this.startGame();
 		},
         buildPiece: function(x,y){
-            var pieceColor = board[x][y].color == 'w' ? 0xffffff : 0x000000;
+            var pieceColor = board[x][y].color == 'w' ? 0xffffff : 0x422A10;
             var pieceMaterial = new THREE.MeshPhongMaterial({color: pieceColor});
             var piece = new THREE.Mesh(pieces_models[board[x][y].piece], pieceMaterial);
             piece.position.x = -x*50;
