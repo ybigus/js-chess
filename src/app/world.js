@@ -101,15 +101,15 @@ var world=function(){
 					}
 				}
 				if(hovered != -1){
-					if(selected == -1 ){
+					if(selected == -1 && cells[hovered] != null && board[cells[hovered].x][cells[hovered].y].color == current ){
 						cells[hovered].isSelected = true;
 					}
 					else{
-						cells[selected].isSelected = false;
 						var x = parseInt(selected / 8), y = selected - x * 8;
 						var newX = parseInt(hovered / 8), newY = hovered - newX * 8;
 						var result = game().move(x, y, newX, newY);
 						if(result.result){
+                            cells[selected].isSelected = false;
 							//destroy enemy
 							if(result.kill){
 								var enemy = _.find(pieces, function(item){
