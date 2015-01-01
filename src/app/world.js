@@ -101,7 +101,10 @@ var world=function(){
 					}
 				}
 				if(hovered != -1){
-					if(selected == -1 && cells[hovered] != null && board[cells[hovered].x][cells[hovered].y].color == current ){
+					if(board[cells[hovered].x][cells[hovered].y] != null && board[cells[hovered].x][cells[hovered].y].color == current ){
+                        _.each(cells, function(cell){
+                            cell.isSelected = false;
+                        });
 						cells[hovered].isSelected = true;
 					}
 					else{
