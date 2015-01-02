@@ -2,6 +2,7 @@ var io = require('socket.io')(3231);
 
 io.on('connection', function(socket){
   console.log('user connected');
+  socket.emit('init',{user_side: 'w'});
   socket.on('move', function(msg){
       //to(room_id)
       socket.broadcast.emit('move', msg);

@@ -1,10 +1,10 @@
 "use strict";
 /*Globals*/
-var current;
+var current, user_side;
 var passant_capture_w, passant_capture_b;
 var board;
-var is_multiplayer = false;
-var game_fiished;
+var is_multiplayer = false, opponent_ready = false;
+var game_finished;
 
 var world=function(){
 	var renderer, scene, camera, light;
@@ -110,7 +110,7 @@ var world=function(){
 						cells[hovered].isSelected = true;
 					}
 					else{
-                        if (game_fiished) return;
+                        if (game_finished || (is_multiplayer && !opponent_ready)) return;
 						var x = parseInt(selected / 8), y = selected - x * 8;
 						var newX = parseInt(hovered / 8), newY = hovered - newX * 8;
 						var result = game().move(x, y, newX, newY);
@@ -159,7 +159,7 @@ var world=function(){
                                 $('.alerts').text('Check');
                             }
                             if(result.game_finished){
-                                game_fiished = true;
+                                game_finished = true;
                                 if(result.check){
                                     $('.alerts').text('Check and mate');
                                 }
@@ -259,7 +259,7 @@ var world=function(){
 			current = 'w';
 			passant_capture_w = null; 
 			passant_capture_b = null;
-            game_fiished = false;
+            game_finished = false;
 			board = [
 				[
 					{piece:'rook',color:'w'},{piece:'knight',color:'w'},{piece:'bishop',color:'w'},
