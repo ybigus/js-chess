@@ -55,7 +55,7 @@ var world=function(){
 			}
 
 			renderer.setSize(width, height);
-			renderer.setClearColor(0x00BFFF, 1);
+			renderer.setClearColor(0x333366, 1);
 			container.append(renderer.domElement);
 			
 			$(document).mousemove(function(event){

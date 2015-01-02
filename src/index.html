@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Chess</title>
+	<style>
+		body{margin:0px; padding: 0px; background: #333366; color: #fff; font-size: 14px;}
+        .button-wrap{
+            position: absolute;
+            top: 50%;
+            left: 0;
+            margin-top: -1em;
+            width: 100%;
+        }
+        .start-game{
+            display: block;
+            color: #fff;
+            font-size: 2em;
+            text-decoration: none;
+            text-transform: uppercase;
+            text-align: center;
+            width: 100px;
+            margin: auto;
+        }
+	</style>
+</head>
+<body>
+	<div class="button-wrap">
+		<a class="start-game" href="game.html">Start Game</a>
+	</div>
+	<script type="text/javascript" src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+	<script type="text/javascript" src="lib/jquery.js"></script>
+	<script type="text/javascript">
+		//test node connection
+		$(document).ready(function(){			
+			var socket = io('http://127.0.0.1:3231');
+			socket.emit('move', {x:1,y:3,newX:3,newY:3});
+			socket.on('move', function(msg){
+				console.log(msg);
+			});
+		});
+	</script>
+</body>
+</html>
