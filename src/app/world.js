@@ -3,6 +3,8 @@
 var current;
 var passant_capture_w, passant_capture_b;
 var board;
+var is_multiplayer = false;
+var game_fiished;
 
 var world=function(){
 	var renderer, scene, camera, light;
@@ -11,7 +13,7 @@ var world=function(){
 		initWorld: function(){
 			var container = $('#chess');
             var $this = this;
-			var width = window.innerWidth, height = window.innerHeight;
+			var width = window.innerWidth, height = window.innerHeight-50;
 			var view_angle = 45, aspect = width/height, near = 0.1, far = 1000;
 			var mouse = { x: 0, y: 0 }
 			renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -61,7 +63,7 @@ var world=function(){
 			$(document).mousemove(function(event){
 				event.preventDefault();
 				mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-				mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+				mouse.y = - ( event.clientY / (window.innerHeight-50) ) * 2 + 1;
 			});
 
             var angle = 0;
@@ -108,10 +110,12 @@ var world=function(){
 						cells[hovered].isSelected = true;
 					}
 					else{
+                        if (game_fiished) return;
 						var x = parseInt(selected / 8), y = selected - x * 8;
 						var newX = parseInt(hovered / 8), newY = hovered - newX * 8;
 						var result = game().move(x, y, newX, newY);
 						if(result.result){
+                            $('.alerts').text('');
                             cells[selected].isSelected = false;
 							//destroy enemy
 							if(result.kill){
@@ -151,18 +155,22 @@ var world=function(){
 								castling_piece.position.x = -result.castling.newX*50;
 								castling_piece.position.z = -result.castling.newY*50;
 							}
+                            if(result.check){
+                                $('.alerts').text('Check');
+                            }
                             if(result.game_finished){
-                                if(result.draw){
-                                    console.log('Draw!');
+                                game_fiished = true;
+                                if(result.check){
+                                    $('.alerts').text('Check and mate');
                                 }
                                 else{
-                                    console.log(current == 'w'? 'Black win' : 'White win');
+                                    $('.alerts').text('Stalemate');
                                 }
                             }
 						}
 						else{
 							if(result.alert){
-								console.log(result.message);
+                                $('.alerts').text(result.message);
 							}
 						}
 					}
@@ -198,9 +206,9 @@ var world=function(){
 			
 			window.addEventListener( 'resize', onWindowResize, false );
 			function onWindowResize() {
-				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.aspect = window.innerWidth / (window.innerHeight-50);
 				camera.updateProjectionMatrix();
-				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.setSize( window.innerWidth, window.innerHeight-50 );
                 render();
 			}
 			this.startGame();
@@ -218,7 +226,9 @@ var world=function(){
             pieces.push(piece);
         },
 		loadModels: function(){
-			console.log('Initializing...');
+            var game_id = this.getGameId();
+            is_multiplayer = game_id ? true : false;
+            $('.alerts').text('Initializing...');
 			var load_geometry = function(name){
 				var d = $.Deferred();
 				var loader = new THREE.JSONLoader();
@@ -236,7 +246,12 @@ var world=function(){
 			var king_deffer = load_geometry('king');
 			var $this = this;
 			$.when(pawn_deffer, rook_deffer, knight_deffer, bishop_deffer, queen_deffer, king_deffer).done(function(){
-				console.log('Done...');
+                if(is_multiplayer){
+                    $('.alerts').text('Waiting for opponent...');
+                }
+                else{
+                    $('.alerts').text('');
+                }
 				$this.initWorld();
 			});
 		},		
@@ -244,6 +259,7 @@ var world=function(){
 			current = 'w';
 			passant_capture_w = null; 
 			passant_capture_b = null;
+            game_fiished = false;
 			board = [
 				[
 					{piece:'rook',color:'w'},{piece:'knight',color:'w'},{piece:'bishop',color:'w'},
@@ -276,6 +292,14 @@ var world=function(){
 					}
 				}
 			}
-		}
+		},
+        getGameId: function(){
+            var url = window.location.href;
+            var id_pattern = /\?id=([\w\d]+)/;
+            if(id_pattern.test(url)){
+                return  id_pattern.exec(url)[1];
+            }
+            return null;
+        }
 	}
 }

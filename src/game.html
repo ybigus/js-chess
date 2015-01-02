@@ -3,12 +3,33 @@
 <head>
 	<title>Chess</title>
 	<style>
-		body{margin:0px; padding: 0px;}
+		html,body{margin:0px; padding: 0px; height: 100%;min-height: 100%;}
         canvas{display: block;}
+        #appBar{
+            background-color: #000;
+            height: 50px;
+            overflow: hidden;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+        }
+        .alerts{
+            color: #fff;
+            font-size: 1.5em;
+            line-height: 50px;
+            width: 100%;
+            text-align: center;
+            padding: 0px 10px;
+        }
+
 	</style>
 </head>
 <body>
 	<div id="chess"></div>
+    <div id="appBar">
+        <div class="alerts"></div>
+    </div>
 	<script type="text/javascript" src="lib/jquery.js"></script>
 	<script type="text/javascript" src="lib/underscore.js"></script>
 	<script type="text/javascript" src="lib/three.js"></script>
@@ -19,8 +40,7 @@
 	<script type="text/javascript" src="app/pieces.js"></script>
 	<script type="text/javascript" src="app/world.js"></script>
 	<script type="text/javascript">
-		$(document).ready(function(){			
-			//world().initWorld();
+		$(document).ready(function(){
 			world().loadModels();
 		});
 	</script>

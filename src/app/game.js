@@ -3,7 +3,7 @@
 	message: error message (string)
 	alert: show message or not (true|false)
 	game_finished: true|false
-	draw: is mate or stalemate (true|false)
+	check: is mate or stalemate (true|false)
 	kill: is enemy piece killed {x,y}
 	transform: is pawn becomes queen {x,y}
 	castling: rook jump {x,y}
@@ -94,9 +94,9 @@ var game=function(){
 				current = current == 'w' ? 'b' : 'w';				
 				//check for mate and stalemate
 				if(!this.checkForMate()){
-					return {result: true, game_finished: true, draw: this.isKingSafe(), kill: kill, transform: transform, castling:castling};
+					return {result: true, game_finished: true, check: !this.isKingSafe(), kill: kill, transform: transform, castling:castling};
 				}
-				return {result: true, kill: kill, transform: transform, castling:castling};
+				return {result: true, kill: kill, transform: transform, castling:castling, check: !this.isKingSafe()};
 			}
 			else{
 				return {result: false, alert: false};

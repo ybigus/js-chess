@@ -8,36 +8,60 @@
             position: absolute;
             top: 50%;
             left: 0;
-            margin-top: -1em;
+            margin-top: -5em;
             width: 100%;
         }
-        .start-game{
+        .start-game, .start-game-locally{
             display: block;
             color: #fff;
             font-size: 2em;
+            line-height: 2em;
             text-decoration: none;
             text-transform: uppercase;
             text-align: center;
-            width: 100px;
+            width: 400px;
             margin: auto;
+        }
+        .start-game:hover, .start-game-locally:hover{
+            color: #67B250
         }
 	</style>
 </head>
 <body>
 	<div class="button-wrap">
-		<a class="start-game" href="game.html">Start Game</a>
+        <div><a class="start-game-locally" href="game.html">Start Game Locally</a></div>
+		<div><a class="start-game" href="game.html">Play With Friend</a></div>
 	</div>
 	<script type="text/javascript" src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 	<script type="text/javascript" src="lib/jquery.js"></script>
 	<script type="text/javascript">
-		//test node connection
-		$(document).ready(function(){			
-			var socket = io('http://127.0.0.1:3231');
+		$(document).ready(function(){
+            $('.start-game').attr('href',$('.start-game').attr('href')+'?id='+guid());
+            //test node connection
+			/*var socket = io('http://127.0.0.1:3231');
 			socket.emit('move', {x:1,y:3,newX:3,newY:3});
 			socket.on('move', function(msg){
 				console.log(msg);
-			});
+			});*/
 		});
+        function guid(){
+            var chars = 'acdefhiklmnoqrstuvwxyz';
+            var numbers = '0123456789';
+            str = getRandomChars(chars) + getRandomChars(numbers);
+            return shuffle(str.split('')).join('');
+        }
+        function getRandomChars(str){
+            var result = '';
+            for(var i = 0; i < 3; i++){
+                var rnd = Math.floor(Math.random() * str.length);
+                result += str[rnd];
+            }
+            return result;
+        }
+        function shuffle(o){
+            for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+            return o;
+        };
 	</script>
 </body>
 </html>
