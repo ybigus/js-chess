@@ -20,7 +20,9 @@ var network=function(){
             });
         },
         move: function(x,y, newX, newY){
-            $('.alerts').text('Opponent Turn...');
+            if(!game_finished){
+                $('.alerts').text('Opponent Turn...');
+            }
             socket.emit('move', {x:x, y:y, newX:newX, newY:newY});
         }
     }
