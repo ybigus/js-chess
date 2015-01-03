@@ -1,14 +1,15 @@
 "use strict";
 /*Globals*/
-var current, user_side;
+var current, user_side, your_turn;
 var passant_capture_w, passant_capture_b;
 var board;
 var is_multiplayer = false, opponent_ready = false;
 var game_finished;
 
+var renderer, scene, camera, light;
+var cells = [], pieces_list = [], pieces_models = {};
+
 var world=function(){
-	var renderer, scene, camera, light;
-	var cells = [], pieces = [], pieces_models = {};
 	return {
 		initWorld: function(){
 			var container = $('#chess');
@@ -110,69 +111,13 @@ var world=function(){
 						cells[hovered].isSelected = true;
 					}
 					else{
-                        if (game_finished || (is_multiplayer && !opponent_ready)) return;
+                        if (game_finished || (is_multiplayer && (!opponent_ready || !your_turn))) return;
 						var x = parseInt(selected / 8), y = selected - x * 8;
 						var newX = parseInt(hovered / 8), newY = hovered - newX * 8;
-						var result = game().move(x, y, newX, newY);
-						if(result.result){
-                            $('.alerts').text('');
+                        var result = $this.move(x, y, newX, newY);
+                        if(result){
                             cells[selected].isSelected = false;
-							//destroy enemy
-							if(result.kill){
-								var enemy = _.find(pieces, function(item){
-									return item.x == result.kill.x && item.y == result.kill.y;
-								});								
-								pieces = _.without(pieces, enemy);
-								scene.remove(enemy);
-								enemy = null;
-							}
-							//find piece
-							var piece = _.find(pieces, function(item){
-								return item.x == x && item.y == y;
-							});
-							//move piece
-							piece.x = newX;
-							piece.y = newY;
-							piece.position.x = -newX*50;
-							piece.position.z = -newY*50;
-                            //pawn transform
-                            if(result.transform){
-                                var pawn = _.find(pieces, function(item){
-                                    return item.x == result.transform.x && item.y == result.transform.y;
-                                });
-                                pieces = _.without(pieces, pawn);
-                                scene.remove(pawn);
-                                pawn = null;
-                                $this.buildPiece(result.transform.x, result.transform.y);
-                            }
-							//castling
-							if(result.castling){
-								var castling_piece = _.find(pieces, function(item){
-									return item.x == result.castling.x && item.y == result.castling.y;
-								});								
-								castling_piece.x = result.castling.newX;
-								castling_piece.y = result.castling.newY;
-								castling_piece.position.x = -result.castling.newX*50;
-								castling_piece.position.z = -result.castling.newY*50;
-							}
-                            if(result.check){
-                                $('.alerts').text('Check');
-                            }
-                            if(result.game_finished){
-                                game_finished = true;
-                                if(result.check){
-                                    $('.alerts').text('Check and mate');
-                                }
-                                else{
-                                    $('.alerts').text('Stalemate');
-                                }
-                            }
-						}
-						else{
-							if(result.alert){
-                                $('.alerts').text(result.message);
-							}
-						}
+                        }
 					}
 				}
 			});
@@ -213,6 +158,71 @@ var world=function(){
 			}
 			this.startGame();
 		},
+        move: function(x,y,newX,newY){
+            var result = game().move(x, y, newX, newY);
+            if(result.result){
+                $('.alerts').text('');
+                //destroy enemy
+                if(result.kill){
+                    var enemy = _.find(pieces_list, function(item){
+                        return item.x == result.kill.x && item.y == result.kill.y;
+                    });
+                    pieces_list = _.without(pieces_list, enemy);
+                    scene.remove(enemy);
+                    enemy = null;
+                }
+                //find piece
+                var piece = _.find(pieces_list, function(item){
+                    return item.x == x && item.y == y;
+                });
+                //move piece
+                piece.x = newX;
+                piece.y = newY;
+                piece.position.x = -newX*50;
+                piece.position.z = -newY*50;
+                //pawn transform
+                if(result.transform){
+                    var pawn = _.find(pieces_list, function(item){
+                        return item.x == result.transform.x && item.y == result.transform.y;
+                    });
+                    pieces_list = _.without(pieces_list, pawn);
+                    scene.remove(pawn);
+                    pawn = null;
+                    $this.buildPiece(result.transform.x, result.transform.y);
+                }
+                //castling
+                if(result.castling){
+                    var castling_piece = _.find(pieces_list, function(item){
+                        return item.x == result.castling.x && item.y == result.castling.y;
+                    });
+                    castling_piece.x = result.castling.newX;
+                    castling_piece.y = result.castling.newY;
+                    castling_piece.position.x = -result.castling.newX*50;
+                    castling_piece.position.z = -result.castling.newY*50;
+                }
+                if(result.check){
+                    $('.alerts').text('Check');
+                }
+                if(result.game_finished){
+                    game_finished = true;
+                    if(result.check){
+                        $('.alerts').text('Check and mate');
+                    }
+                    else{
+                        $('.alerts').text('Stalemate');
+                    }
+                }
+                if(is_multiplayer){
+                    //todo: socket move
+                }
+            }
+            else{
+                if(result.alert){
+                    $('.alerts').text(result.message);
+                }
+            }
+            return result.result;
+        },
         buildPiece: function(x,y){
             var pieceColor = board[x][y].color == 'w' ? 0xffffff : 0x422A10;
             var pieceMaterial = new THREE.MeshPhongMaterial({color: pieceColor});
@@ -223,7 +233,7 @@ var world=function(){
             piece.x = x;
             piece.y = y;
             piece.geometry.computeVertexNormals();
-            pieces.push(piece);
+            pieces_list.push(piece);
         },
 		loadModels: function(){
             var game_id = this.getGameId();
