@@ -1,6 +1,6 @@
 "use strict";
 /*Globals*/
-var current, user_side, your_turn;
+var current, user_side;
 var passant_capture_w, passant_capture_b;
 var board;
 var is_multiplayer = false, opponent_ready = false;
@@ -8,6 +8,7 @@ var game_finished;
 
 var renderer, scene, camera, light;
 var cells = [], pieces_list = [], pieces_models = {};
+var angle = 0;
 
 var world=function(){
 	return {
@@ -67,7 +68,6 @@ var world=function(){
 				mouse.y = - ( event.clientY / (window.innerHeight-50) ) * 2 + 1;
 			});
 
-            var angle = 0;
             $(document).keydown(function(e){
                 switch(e.which){
                     case 65:
@@ -111,11 +111,14 @@ var world=function(){
 						cells[hovered].isSelected = true;
 					}
 					else{
-                        if (game_finished || (is_multiplayer && (!opponent_ready || !your_turn))) return;
+                        if (game_finished || (is_multiplayer && (!opponent_ready || user_side != current))) return;
 						var x = parseInt(selected / 8), y = selected - x * 8;
 						var newX = parseInt(hovered / 8), newY = hovered - newX * 8;
                         var result = $this.move(x, y, newX, newY);
                         if(result){
+                            if(is_multiplayer){
+                                network().move(x, y, newX, newY);
+                            }
                             cells[selected].isSelected = false;
                         }
 					}
@@ -212,9 +215,6 @@ var world=function(){
                         $('.alerts').text('Stalemate');
                     }
                 }
-                if(is_multiplayer){
-                    //todo: socket move
-                }
             }
             else{
                 if(result.alert){
@@ -238,6 +238,7 @@ var world=function(){
 		loadModels: function(){
             var game_id = this.getGameId();
             is_multiplayer = game_id ? true : false;
+            network().init(game_id)
             $('.alerts').text('Initializing...');
 			var load_geometry = function(name){
 				var d = $.Deferred();

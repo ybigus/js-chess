@@ -1,7 +1,11 @@
+//BUGS:
+/*
+* after reload board is initial, both black
+* on multiplayer allow select only current items
+* */
 var io = require('socket.io')(3231);
 var user_count = 0;
 io.on('connection', function(socket){
-    //console.log('user connected');
     var room_id = socket.handshake.query.id;
     if(io.sockets.adapter.rooms && io.sockets.adapter.rooms[room_id]){
         var room = io.sockets.adapter.rooms[room_id];
@@ -14,8 +18,9 @@ io.on('connection', function(socket){
         socket.broadcast.emit('init', {result: false});
         return;
     }
-    socket.join(room_id);
+
     socket.emit('init',{result: true, user_side: user_count == 0 ? 'w' : 'b'});
+    socket.join(room_id);
     if(user_count == 1){
         io.in(room_id).emit('start',{result: true});
     }

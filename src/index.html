@@ -32,11 +32,9 @@
         <div><a class="start-game-locally" href="game.html">Start Game Locally</a></div>
 		<div><a class="start-game" href="game.html">Play With Friend</a></div>
 	</div>
-    <script type="text/javascript" src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 	<script type="text/javascript" src="lib/jquery.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function(){
-            //var socket = io('http://127.0.0.1:3231',{query:"id=asdasd"});
             $('.start-game').attr('href',$('.start-game').attr('href')+'?id='+guid());
 		});
         function guid(){
