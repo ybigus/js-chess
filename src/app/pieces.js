@@ -37,13 +37,13 @@ var pieces = function(){
 			var availableMoves = [];
 			if(board[x][y].color == 'w'){
 				if(this.cell_available(x,y,x+1,y,true)) availableMoves.push({x:x+1, y:y});
-				if(x == 1 && this.cell_available(x,y,x+2,y,true)) availableMoves.push({x:x+2, y:y});
+				if(x == 1 && this.cell_available(x,y,x+1,y,true) && this.cell_available(x,y,x+2,y,true)) availableMoves.push({x:x+2, y:y});
 				if((passant_capture_b != null && passant_capture_b.x == x+1 && passant_capture_b.y == y+1) || (this.cell_available(x,y,x+1,y+1) && board[x+1][y+1] != null)) availableMoves.push({x:x+1, y:y+1});
 				if((passant_capture_b != null && passant_capture_b.x == x+1 && passant_capture_b.y == y-1) || (this.cell_available(x,y,x+1,y-1) && board[x+1][y-1] != null)) availableMoves.push({x:x+1, y:y-1});
 			}
 			else{
 				if(this.cell_available(x,y,x-1,y,true)) availableMoves.push({x:x-1, y:y});
-				if(x == 6 && this.cell_available(x,y,x-2,y,true)) availableMoves.push({x:x-2, y:y});
+				if(x == 6 && this.cell_available(x,y,x-1,y,true) && this.cell_available(x,y,x-2,y,true)) availableMoves.push({x:x-2, y:y});
 				if((passant_capture_w != null && passant_capture_w.x == x-1 && passant_capture_w.y == y+1) || (this.cell_available(x,y,x-1,y+1) && board[x-1][y+1] != null)) availableMoves.push({x:x-1, y:y+1});
 				if((passant_capture_w != null && passant_capture_w.x == x-1 && passant_capture_w.y == y-1) || (this.cell_available(x,y,x-1,y-1) && board[x-1][y-1] != null)) availableMoves.push({x:x-1, y:y-1});
 			}			
