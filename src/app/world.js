@@ -104,7 +104,10 @@ var world=function(){
 					}
 				}
 				if(hovered != -1){
-					if(board[cells[hovered].x][cells[hovered].y] != null && board[cells[hovered].x][cells[hovered].y].color == current ){
+					if(
+                        (!is_multiplayer && board[cells[hovered].x][cells[hovered].y] != null && board[cells[hovered].x][cells[hovered].y].color == current ) ||
+                        (is_multiplayer && board[cells[hovered].x][cells[hovered].y] != null && board[cells[hovered].x][cells[hovered].y].color == user_side )
+                    ){
                         _.each(cells, function(cell){
                             cell.isSelected = false;
                         });
