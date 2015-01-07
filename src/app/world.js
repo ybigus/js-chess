@@ -162,6 +162,7 @@ var world=function(){
 			this.startGame();
 		},
         move: function(x,y,newX,newY){
+            var $this = this;
             var result = game().move(x, y, newX, newY);
             if(result.result){
                 $('.alerts').text('');
@@ -233,12 +234,14 @@ var world=function(){
             piece.x = x;
             piece.y = y;
             piece.geometry.computeVertexNormals();
+            if(board[x][y] != null && board[x][y].piece == 'knight' && board[x][y].color == 'b'){
+                piece.rotation.y = Math.PI;
+            }
             pieces_list.push(piece);
         },
 		loadModels: function(){
             var game_id = this.getGameId();
             is_multiplayer = game_id ? true : false;
-            network().init(game_id)
             $('.alerts').text('Initializing...');
 			var load_geometry = function(name){
 				var d = $.Deferred();
@@ -264,6 +267,9 @@ var world=function(){
                     $('.alerts').text('');
                 }
 				$this.initWorld();
+                if(is_multiplayer){
+                    network().init(game_id);
+                }
 			});
 		},		
 		startGame: function(){

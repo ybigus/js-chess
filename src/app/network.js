@@ -2,7 +2,7 @@ var socket;
 var network=function(){
     return {
         init: function(room_id){
-            socket = io('http://127.0.0.1:3231', { query: 'id=' + room_id });
+            socket = io('http://107.170.144.186:3231', { query: 'id=' + room_id });
             socket.on('init', function(msg){
                 user_side = msg.user_side;
                 if(is_multiplayer && user_side == 'b'){
