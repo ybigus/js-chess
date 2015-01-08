@@ -8,6 +8,7 @@ var game_finished;
 
 var renderer, scene, camera, light, chessboard;
 var cells = [], pieces_list = [], pieces_models = {};
+var textures = {};
 var angle = 0;
 
 /*WORLD SETTINGS*/
@@ -21,9 +22,9 @@ var bg_color = 0x333366;
 var light_color = 0xFFFFFF;
 var white_piece_color = 0xFFFFFF;
 var black_piece_color = 0x422A10;
-var white_cell_color = 0xDDC5A0;
+/*var white_cell_color = 0xDDC5A0;
 var black_cell_color = 0x9D7D40;
-var hover_cell_color = 0xB1FB98;
+var hover_cell_color = 0xB1FB98;*/
 
 
 
@@ -65,9 +66,9 @@ var world=function(){
 				var isWhite = i % 2 != 0;
 				for(var j=0; j<8; j++){
 					var cellGeometry = new THREE.BoxGeometry(cell_size,1,cell_size);
-                    var currentColor = isWhite ? white_cell_color : black_cell_color;
-					
-					var cellMaterial = new THREE.MeshBasicMaterial({color: currentColor});
+                    //var currentColor = isWhite ? white_cell_color : black_cell_color;
+                    var currentColor = isWhite ? textures['white_cell'] : textures['black_cell'];
+					var cellMaterial = new THREE.MeshLambertMaterial({map: currentColor});
 					var cell = new THREE.Mesh(cellGeometry, cellMaterial);
 					cell.x = i;
 					cell.y = j;
@@ -163,14 +164,18 @@ var world=function(){
         		var raycaster = new THREE.Raycaster(camera.position, mouse3D);
 				var intersects = raycaster.intersectObjects(cells);
 				for(var i=0; i<cells.length; i++){
-					var currentColor = cells[i].isWhite ? white_cell_color : black_cell_color;
+					//var currentColor = cells[i].isWhite ? white_cell_color : black_cell_color;
+                    var currentColor = cells[i].isWhite ? textures['white_cell'] : textures['black_cell'];
+
 					if(!cells[i].isSelected){
-						cells[i].material.color.setHex(currentColor);
+						//cells[i].material.color.setHex(currentColor);
+                        cells[i].material.map = currentColor;
 					}
 					cells[i].isHovered = false;
 				}
 		        if (intersects.length > 0) {
-		            intersects[0].object.material.color.setHex(hover_cell_color);
+		            //intersects[0].object.material.color.setHex(hover_cell_color);
+                    intersects[0].object.material.map = intersects[0].object.isWhite ? textures['white_cell_hover'] : textures['black_cell_hover'];
 		            intersects[0].object.isHovered = true;
 		        }
 
@@ -287,6 +292,14 @@ var world=function(){
                 });
                 return d.promise();
             }
+            var load_texture = function(name, path){
+                var d = $.Deferred();
+                THREE.ImageUtils.loadTexture('assets/textures/'+path, THREE.UVMapping(), function(image){
+                    textures[name] = image;
+                    d.resolve();
+                });
+                return d.promise();
+            }
 			var pawn_deffer = load_geometry('pawn');
 			var rook_deffer = load_geometry('rook');
 			var knight_deffer = load_geometry('knight');
@@ -294,18 +307,24 @@ var world=function(){
 			var queen_deffer = load_geometry('queen');
 			var king_deffer = load_geometry('king');
             var board_deffer = load_board();
+            var white_cell_texture_deffer = load_texture('white_cell','white_cell.jpg');
+            var black_cell_texture_deffer = load_texture('black_cell','black_cell.jpg');
+            var white_cell_hover_texture_deffer = load_texture('white_cell_hover','white_cell_hover.jpg');
+            var black_cell_hover_texture_deffer = load_texture('black_cell_hover','black_cell_hover.jpg');
 			var $this = this;
-			$.when(pawn_deffer, rook_deffer, knight_deffer, bishop_deffer, queen_deffer, king_deffer, board_deffer).done(function(){
-                if(is_multiplayer){
-                    showMessage(messages.WAITING_OPPONENT);
-                }
-                else{
-                    showMessage(messages.EMPTY);
-                }
-				$this.initWorld();
-                if(is_multiplayer){
-                    network().init(game_id);
-                }
+			$.when(pawn_deffer, rook_deffer, knight_deffer, bishop_deffer, queen_deffer, king_deffer, board_deffer,
+                    white_cell_texture_deffer,black_cell_texture_deffer,white_cell_hover_texture_deffer,black_cell_hover_texture_deffer)
+                .done(function(){
+                    if(is_multiplayer){
+                        showMessage(messages.WAITING_OPPONENT);
+                    }
+                    else{
+                        showMessage(messages.EMPTY);
+                    }
+                    $this.initWorld();
+                    if(is_multiplayer){
+                        network().init(game_id);
+                    }
 			});
 		},		
 		startGame: function(){

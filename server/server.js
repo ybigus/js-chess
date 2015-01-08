@@ -1,8 +1,3 @@
-//BUGS:
-/*
-* after reload board is initial, both black
-* on multiplayer allow select only current items
-* */
 var io = require('socket.io')(3231);
 var user_count = 0;
 io.on('connection', function(socket){
