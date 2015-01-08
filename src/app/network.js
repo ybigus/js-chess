@@ -1,5 +1,6 @@
 var socket;
 var server_address = 'http://107.170.144.186:3231';
+//var server_address = 'http://127.0.0.1:3231';
 var network=function(){
     return {
         init: function(room_id){
@@ -23,6 +24,12 @@ var network=function(){
             });
             socket.on('move', function(msg){
                 world().move(msg.x, msg.y, msg.newX, msg.newY);
+            });
+            socket.on('game_finished', function(msg){
+                if(msg.result){
+                    showMessage(messages.YOU_WIN);
+                    socket.disconnect();
+                }
             });
         },
         move: function(x,y, newX, newY){

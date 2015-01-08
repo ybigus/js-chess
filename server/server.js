@@ -21,10 +21,14 @@ io.on('connection', function(socket){
 
     socket.emit('init',{result: true, user_side: user_count == 0 ? 'w' : 'b'});
     socket.join(room_id);
+
     if(user_count == 1){
         io.in(room_id).emit('start',{result: true});
     }
     socket.on('move', function(msg){
         socket.broadcast.to(room_id).emit('move', msg);
+    });
+    socket.on('disconnect', function(){
+        socket.broadcast.to(room_id).emit('game_finished', {"result": true, "draw": false});
     });
 });

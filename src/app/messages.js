@@ -12,7 +12,9 @@ var messages = {
 
     CHECK: "Check!",
     MATE: "Check and mate!",
-    STALEMATE: "Stalemate"
+    STALEMATE: "Stalemate",
+
+    YOU_WIN: "Opponent disconnected. You win"
 }
 
 function showMessage(msg){
