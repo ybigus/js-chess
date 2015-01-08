@@ -57,7 +57,7 @@ var world=function(){
             var platformMaterial = new THREE.MeshLambertMaterial({color: 0x592A10});
             var platform = new THREE.Mesh(chessboard, platformMaterial);
             platform.position.x = -175;
-            platform.position.y = -2;
+            platform.position.y = -1;
             platform.position.z = -175;
             scene.add(platform);
 
