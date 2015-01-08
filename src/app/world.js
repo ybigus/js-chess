@@ -10,39 +10,63 @@ var renderer, scene, camera, light;
 var cells = [], pieces_list = [], pieces_models = {};
 var angle = 0;
 
+/*WORLD SETTINGS*/
+var camera_position = {x: 200, y: 500, z: -200};
+var light_position = {x: -200, y: 500, z: -200};
+var board_center = {x:-200, y: 0, z: -200};
+var cell_size = 50;
+
+/*COLOURS*/
+var bg_color = 0x333366;
+var light_color = 0xFFFFFF;
+var white_piece_color = 0xFFFFFF;
+var black_piece_color = 0x422A10;
+var white_cell_color = 0xDDC5A0;
+var black_cell_color = 0x9D7D40;
+var hover_cell_color = 0xB1FB98;
+
+
+
+function full_height(){
+    return window.innerHeight-$('#appBar').height();
+}
+function full_width(){
+    return window.innerWidth;
+}
+
 var world=function(){
 	return {
 		initWorld: function(){
 			var container = $('#chess');
             var $this = this;
-			var width = window.innerWidth, height = window.innerHeight-50;
+			var width = full_width(), height = full_height();
 			var view_angle = 45, aspect = width/height, near = 0.1, far = 1000;
-			var mouse = { x: 0, y: 0 }
+			var mouse = { x: 0, y: 0 };
 			renderer = new THREE.WebGLRenderer({ antialias: true });
 			camera = new THREE.PerspectiveCamera(view_angle, aspect, near, far);
 			scene = new THREE.Scene();
 			scene.add(camera);
-            camera.position.set(200, 500, -200);
-			camera.lookAt(new THREE.Vector3(-200, 0, -200));
+            camera.position.set(camera_position.x, camera_position.y, camera_position.z);
+			camera.lookAt(new THREE.Vector3(board_center.x, board_center.y, board_center.z));
 
-            light = new THREE.DirectionalLight( 0xb4e7f2, 0.8 );
-            light.position.set(-200, 500, -200);
+            light = new THREE.DirectionalLight( light_color, 0.8 );
+            light.position.set(light_position.x, light_position.y, light_position.z);
             scene.add(light);
 
             //platform
-            var platformMaterial = new THREE.MeshLambertMaterial({color: 0x592A10});
+            /*var platformMaterial = new THREE.MeshLambertMaterial({color: 0x592A10});
             var platformGeometry = new THREE.BoxGeometry(440,1,440);
             var platform = new THREE.Mesh(platformGeometry, platformMaterial);
             platform.position.x = -175;
             platform.position.y = -1;
             platform.position.z = -175;
-            scene.add(platform);
+            scene.add(platform);*/
 
 			for(var i=0; i<8; i++){
 				var isWhite = i % 2 != 0;
 				for(var j=0; j<8; j++){
-					var cellGeometry = new THREE.BoxGeometry(50,1,50);
-                    var currentColor = isWhite ? 0xDDC5A0 : 0x9D7D40;
+					var cellGeometry = new THREE.BoxGeometry(cell_size,1,cell_size);
+                    var currentColor = isWhite ? white_cell_color : black_cell_color;
 					
 					var cellMaterial = new THREE.MeshBasicMaterial({color: currentColor});
 					var cell = new THREE.Mesh(cellGeometry, cellMaterial);
@@ -50,8 +74,8 @@ var world=function(){
 					cell.y = j;
 					cell.isWhite = isWhite;
 					scene.add(cell);
-					cell.position.x = -i*50;
-					cell.position.z = -j*50;
+					cell.position.x = - i * cell_size;
+					cell.position.z = -j * cell_size;
 					cells.push(cell);
 
 					isWhite = !isWhite;
@@ -59,35 +83,35 @@ var world=function(){
 			}
 
 			renderer.setSize(width, height);
-			renderer.setClearColor(0x333366, 1);
+			renderer.setClearColor(bg_color, 1);
 			container.append(renderer.domElement);
 			
 			$(document).mousemove(function(event){
 				event.preventDefault();
-				mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-				mouse.y = - ( event.clientY / (window.innerHeight-50) ) * 2 + 1;
+				mouse.x = ( event.clientX / full_width() ) * 2 - 1;
+				mouse.y = - ( event.clientY / full_height() ) * 2 + 1;
 			});
 
             $(document).keydown(function(e){
                 switch(e.which){
                     case 65:
                         angle += 5;
-                        camera.position.x = -200 + 400 * Math.cos(Math.PI * angle / 180);
-                        camera.position.z = -200 + 400 * Math.sin(Math.PI * angle / 180);
+                        camera.position.x = -camera_position.x + cell_size * 8 * Math.cos(Math.PI * angle / 180);
+                        camera.position.z = -camera_position.x + cell_size * 8 * Math.sin(Math.PI * angle / 180);
                         break;
                     case 68:
                         angle -= 5;
-                        camera.position.x = -200 + 400 * Math.cos(Math.PI * angle / 180);
-                        camera.position.z = -200 + 400 * Math.sin(Math.PI * angle / 180);
+                        camera.position.x = -camera_position.x + cell_size * 8 * Math.cos(Math.PI * angle / 180);
+                        camera.position.z = -camera_position.x + cell_size * 8 * Math.sin(Math.PI * angle / 180);
                         break;
                     case 87:
                         if(camera.position.y < 540){
-                            camera.position.y += 20;
+                            camera.position.y += 10;
                         }
                         break;
                     case 83:
                         if(camera.position.y > 60){
-                            camera.position.y -= 20;
+                            camera.position.y -= 10;
                         }
                         break;
                 }
@@ -131,7 +155,7 @@ var world=function(){
 			var render = function(){
 				requestAnimationFrame(render);
 
-				camera.lookAt(new THREE.Vector3(-200, 0, -200));
+				camera.lookAt(new THREE.Vector3(board_center.x, board_center.y, board_center.z));
 
 				var mouse3D = new THREE.Vector3(mouse.x, mouse.y, 0.5);
 				mouse3D.unproject(camera);
@@ -140,14 +164,14 @@ var world=function(){
         		var raycaster = new THREE.Raycaster(camera.position, mouse3D);
 				var intersects = raycaster.intersectObjects(cells);
 				for(var i=0; i<cells.length; i++){
-					var currentColor = cells[i].isWhite ? 0xDDC5A0 : 0x9D7D40;
+					var currentColor = cells[i].isWhite ? white_cell_color : black_cell_color;
 					if(!cells[i].isSelected){
 						cells[i].material.color.setHex(currentColor);
 					}
 					cells[i].isHovered = false;
 				}
 		        if (intersects.length > 0) {
-		            intersects[0].object.material.color.setHex(0xB1FB98);
+		            intersects[0].object.material.color.setHex(hover_cell_color);
 		            intersects[0].object.isHovered = true;
 		        }
 
@@ -157,9 +181,9 @@ var world=function(){
 			
 			window.addEventListener( 'resize', onWindowResize, false );
 			function onWindowResize() {
-				camera.aspect = window.innerWidth / (window.innerHeight-50);
+				camera.aspect = full_width() / full_height();
 				camera.updateProjectionMatrix();
-				renderer.setSize( window.innerWidth, window.innerHeight-50 );
+				renderer.setSize( full_width(), full_height() );
                 render();
 			}
 			this.startGame();
@@ -168,7 +192,7 @@ var world=function(){
             var $this = this;
             var result = game().move(x, y, newX, newY);
             if(result.result){
-                $('.alerts').text('');
+                showMessage(messages.EMPTY);
                 //destroy enemy
                 if(result.kill){
                     var enemy = _.find(pieces_list, function(item){
@@ -185,8 +209,8 @@ var world=function(){
                 //move piece
                 piece.x = newX;
                 piece.y = newY;
-                piece.position.x = -newX*50;
-                piece.position.z = -newY*50;
+                piece.position.x = -newX * cell_size;
+                piece.position.z = -newY * cell_size;
                 //pawn transform
                 if(result.transform){
                     var pawn = _.find(pieces_list, function(item){
@@ -204,35 +228,35 @@ var world=function(){
                     });
                     castling_piece.x = result.castling.newX;
                     castling_piece.y = result.castling.newY;
-                    castling_piece.position.x = -result.castling.newX*50;
-                    castling_piece.position.z = -result.castling.newY*50;
+                    castling_piece.position.x = -result.castling.newX * cell_size;
+                    castling_piece.position.z = -result.castling.newY * cell_size;
                 }
                 if(result.check){
-                    $('.alerts').text('Check');
+                    showMessage(messages.CHECK);
                 }
                 if(result.game_finished){
                     game_finished = true;
                     if(result.check){
-                        $('.alerts').text('Check and mate');
+                        showMessage(messages.MATE);
                     }
                     else{
-                        $('.alerts').text('Stalemate');
+                        showMessage(messages.STALEMATE);
                     }
                 }
             }
             else{
                 if(result.alert){
-                    $('.alerts').text(result.message);
+                    showMessage(result.message);
                 }
             }
             return result.result;
         },
         buildPiece: function(x,y){
-            var pieceColor = board[x][y].color == 'w' ? 0xffffff : 0x422A10;
+            var pieceColor = board[x][y].color == 'w' ? white_piece_color : black_piece_color;
             var pieceMaterial = new THREE.MeshPhongMaterial({color: pieceColor});
             var piece = new THREE.Mesh(pieces_models[board[x][y].piece], pieceMaterial);
-            piece.position.x = -x*50;
-            piece.position.z = -y*50;
+            piece.position.x = -x * cell_size;
+            piece.position.z = -y * cell_size;
             scene.add(piece);
             piece.x = x;
             piece.y = y;
@@ -245,7 +269,7 @@ var world=function(){
 		loadModels: function(){
             var game_id = this.getGameId();
             is_multiplayer = game_id ? true : false;
-            $('.alerts').text('Initializing...');
+            showMessage(messages.INITIALIZING);
 			var load_geometry = function(name){
 				var d = $.Deferred();
 				var loader = new THREE.JSONLoader();
@@ -264,10 +288,10 @@ var world=function(){
 			var $this = this;
 			$.when(pawn_deffer, rook_deffer, knight_deffer, bishop_deffer, queen_deffer, king_deffer).done(function(){
                 if(is_multiplayer){
-                    $('.alerts').text('Waiting for opponent...');
+                    showMessage(messages.WAITING_OPPONENT);
                 }
                 else{
-                    $('.alerts').text('');
+                    showMessage(messages.EMPTY);
                 }
 				$this.initWorld();
                 if(is_multiplayer){
