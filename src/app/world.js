@@ -6,7 +6,7 @@ var board;
 var is_multiplayer = false, opponent_ready = false;
 var game_finished;
 
-var renderer, scene, camera, light;
+var renderer, scene, camera, light, chessboard;
 var cells = [], pieces_list = [], pieces_models = {};
 var angle = 0;
 
@@ -53,14 +53,13 @@ var world=function(){
             light.position.set(light_position.x, light_position.y, light_position.z);
             scene.add(light);
 
-            //platform
-            /*var platformMaterial = new THREE.MeshLambertMaterial({color: 0x592A10});
-            var platformGeometry = new THREE.BoxGeometry(440,1,440);
-            var platform = new THREE.Mesh(platformGeometry, platformMaterial);
+            //chessboard
+            var platformMaterial = new THREE.MeshLambertMaterial({color: 0x592A10});
+            var platform = new THREE.Mesh(chessboard, platformMaterial);
             platform.position.x = -175;
-            platform.position.y = -1;
+            platform.position.y = -2;
             platform.position.z = -175;
-            scene.add(platform);*/
+            scene.add(platform);
 
 			for(var i=0; i<8; i++){
 				var isWhite = i % 2 != 0;
@@ -279,14 +278,24 @@ var world=function(){
 				});
 				return d.promise();
 			}
+            var load_board = function(){
+                var d = $.Deferred();
+                var loader = new THREE.JSONLoader();
+                loader.load('models/chessboard.js', function(geometry){
+                    chessboard = geometry;
+                    d.resolve();
+                });
+                return d.promise();
+            }
 			var pawn_deffer = load_geometry('pawn');
 			var rook_deffer = load_geometry('rook');
 			var knight_deffer = load_geometry('knight');
 			var bishop_deffer = load_geometry('bishop');
 			var queen_deffer = load_geometry('queen');
 			var king_deffer = load_geometry('king');
+            var board_deffer = load_board();
 			var $this = this;
-			$.when(pawn_deffer, rook_deffer, knight_deffer, bishop_deffer, queen_deffer, king_deffer).done(function(){
+			$.when(pawn_deffer, rook_deffer, knight_deffer, bishop_deffer, queen_deffer, king_deffer, board_deffer).done(function(){
                 if(is_multiplayer){
                     showMessage(messages.WAITING_OPPONENT);
                 }
