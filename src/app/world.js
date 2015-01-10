@@ -20,8 +20,8 @@ var cell_size = 50;
 /*COLOURS*/
 var bg_color = 0x333366;
 var light_color = 0xFFFFFF;
-var white_piece_color = 0xFFFFFF;
-var black_piece_color = 0x422A10;
+//var white_piece_color = 0xFFFFFF;
+//var black_piece_color = 0x422A10;
 /*var white_cell_color = 0xDDC5A0;
 var black_cell_color = 0x9D7D40;
 var hover_cell_color = 0xB1FB98;*/
@@ -256,8 +256,9 @@ var world=function(){
             return result.result;
         },
         buildPiece: function(x,y){
-            var pieceColor = board[x][y].color == 'w' ? white_piece_color : black_piece_color;
-            var pieceMaterial = new THREE.MeshPhongMaterial({color: pieceColor});
+            //var pieceColor = board[x][y].color == 'w' ? white_piece_color : black_piece_color;
+            //var pieceMaterial = new THREE.MeshPhongMaterial({color: pieceColor});
+            var pieceMaterial = new THREE.ShaderMaterial(THREE.GlassShader(textures['map_texture'], board[x][y].color == 'w' ? textures['white_piece_texture'] : textures['black_piece_texture']));
             var piece = new THREE.Mesh(pieces_models[board[x][y].piece], pieceMaterial);
             piece.position.x = -x * cell_size;
             piece.position.z = -y * cell_size;
@@ -311,9 +312,14 @@ var world=function(){
             var black_cell_texture_deffer = load_texture('black_cell','black_cell.jpg');
             var white_cell_hover_texture_deffer = load_texture('white_cell_hover','white_cell_hover.jpg');
             var black_cell_hover_texture_deffer = load_texture('black_cell_hover','black_cell_hover.jpg');
+            var map_texture_deffer = load_texture('map_texture','map.jpg');
+            var white_piece_texture_deffer = load_texture('white_piece_texture','white_piece.jpg');
+            var black_piece_texture_deffer = load_texture('black_piece_texture','black_piece.jpg');
 			var $this = this;
 			$.when(pawn_deffer, rook_deffer, knight_deffer, bishop_deffer, queen_deffer, king_deffer, board_deffer,
-                    white_cell_texture_deffer,black_cell_texture_deffer,white_cell_hover_texture_deffer,black_cell_hover_texture_deffer)
+                    white_cell_texture_deffer,black_cell_texture_deffer,white_cell_hover_texture_deffer,black_cell_hover_texture_deffer,
+                    map_texture_deffer, white_piece_texture_deffer, black_piece_texture_deffer
+                )
                 .done(function(){
                     if(is_multiplayer){
                         showMessage(messages.WAITING_OPPONENT);
