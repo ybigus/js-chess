@@ -55,7 +55,9 @@ var world=function(){
             scene.add(light);
 
             //chessboard
-            var platformMaterial = new THREE.MeshLambertMaterial({color: 0x592A10});
+            //textures['chess_board'].magFilter = THREE.NearestFilter;
+            //textures['chess_board'].minFilter = THREE.LinearMipMapLinearFilter;
+            var platformMaterial = new THREE.MeshLambertMaterial({map: textures['chess_board']});
             var platform = new THREE.Mesh(chessboard, platformMaterial);
             platform.position.x = -175;
             platform.position.y = -1;
@@ -308,11 +310,12 @@ var world=function(){
 			var king_deffer = load_geometry('king');
             var board_deffer = load_board();
             var white_cell_texture_deffer = load_texture('white_cell','white_cell.jpg');
+            var chessBoard = load_texture('chess_board', 'chessboard.jpg');
             var black_cell_texture_deffer = load_texture('black_cell','black_cell.jpg');
             var white_cell_hover_texture_deffer = load_texture('white_cell_hover','white_cell_hover.jpg');
             var black_cell_hover_texture_deffer = load_texture('black_cell_hover','black_cell_hover.jpg');
 			var $this = this;
-			$.when(pawn_deffer, rook_deffer, knight_deffer, bishop_deffer, queen_deffer, king_deffer, board_deffer,
+			$.when(chessBoard, pawn_deffer, rook_deffer, knight_deffer, bishop_deffer, queen_deffer, king_deffer, board_deffer,
                     white_cell_texture_deffer,black_cell_texture_deffer,white_cell_hover_texture_deffer,black_cell_hover_texture_deffer)
                 .done(function(){
                     if(is_multiplayer){
