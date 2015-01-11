@@ -1,5 +1,3 @@
-//THREE.ImageUtils.loadTexture( 'assets/textures/map.jpg' )
-//THREE.ImageUtils.loadTexture( 'assets/textures/black_piece.jpg' )
 THREE.GlassShader = function(map_texture, piece_texture){
     return {
         uniforms: {
