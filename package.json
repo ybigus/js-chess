@@ -1,6 +1,5 @@
 {
   "name": "chess",
-  "version": "0.1",
   "description": "chess",
   "main": "src/app/app.min.js",
   "author": "Yaroslav Bigus",
@@ -15,12 +14,5 @@
     "main-bower-files": "^2.4.1",
     "mocha": "^2.0.1",
     "socket.io": "^1.2.1"
-  },
-  "devDependencies": {
-    "gulp": "~3.8.10",
-    "opn": "~1.0.1",
-    "gulp-plumber": "~0.6.6",
-    "gulp-webserver": "~0.9.0",
-    "gulp-sass": "~1.2.4"
   }
 }
