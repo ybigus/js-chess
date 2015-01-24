@@ -12,8 +12,9 @@ var textures = {};
 var angle = 0;
 
 /*WORLD SETTINGS*/
-var camera_position = {x: 200, y: 500, z: -200};
-var light_position = {x: -200, y: 500, z: -200};
+//var camera_position = {x: 193, y: 340, z: -269};
+var camera_position = {x: 200, y: 340, z: -200};
+var light_position = {x: -200, y: 340, z: -200};
 var board_center = {x:-200, y: 0, z: -200};
 var cell_size = 50;
 
