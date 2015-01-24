@@ -26,7 +26,7 @@ var light_color = 0xFFFFFF;
 var black_cell_color = 0x9D7D40;
 var hover_cell_color = 0xB1FB98;*/
 
-
+var background;
 
 function full_height(){
     return window.innerHeight-$('#appBar').height();
@@ -41,7 +41,7 @@ var world=function(){
 			var container = $('#chess');
             var $this = this;
 			var width = full_width(), height = full_height();
-			var view_angle = 45, aspect = width/height, near = 0.1, far = 1000;
+			var view_angle = 65, aspect = width/height, near = 1, far = 5000;
 			var mouse = { x: 0, y: 0 };
 			renderer = new THREE.WebGLRenderer({ antialias: true });
 			camera = new THREE.PerspectiveCamera(view_angle, aspect, near, far);
@@ -54,6 +54,11 @@ var world=function(){
             light.position.set(light_position.x, light_position.y, light_position.z);
             scene.add(light);
 
+            background = new THREE.Mesh( new THREE.BoxGeometry( 4000, 4000, 4000 ), textures['cubemap'] );
+            scene.add(background);
+            background.position.x = -500;
+            background.position.y = 0;
+            background.position.z = -500;
             //chessboard
             //textures['chess_board'].magFilter = THREE.NearestFilter;
             //textures['chess_board'].minFilter = THREE.LinearMipMapLinearFilter;
@@ -319,6 +324,27 @@ var world=function(){
             var white_piece_texture_deffer = load_texture('white_piece_texture','white_piece.jpg');
             var black_piece_texture_deffer = load_texture('black_piece_texture','black_piece.jpg');
 			var $this = this;
+
+            var urls = [
+                    'assets/textures/dawnmountain-xpos.png',
+                     'assets/textures/dawnmountain-xneg.png',
+                     'assets/textures/dawnmountain-ypos.png',
+                     'assets/textures/dawnmountain-yneg.png',
+                     'assets/textures/dawnmountain-zpos.png',
+                     'assets/textures/dawnmountain-zneg.png'
+                ];
+
+            var cubemap = THREE.ImageUtils.loadTextureCube(urls);
+            var shader = THREE.ShaderLib["cube"];
+            shader.uniforms[ "tCube" ].value = cubemap;
+            textures['cubemap'] = new THREE.ShaderMaterial( { // A ShaderMaterial uses custom vertex and fragment shaders.
+                fragmentShader: shader.fragmentShader,
+                vertexShader: shader.vertexShader,
+                uniforms: shader.uniforms,
+                depthWrite: false,
+                side: THREE.BackSide
+            } );
+
 			$.when(pawn_deffer, rook_deffer, knight_deffer, bishop_deffer, queen_deffer, king_deffer, board_deffer, chess_board_texture_deffer,
                     white_cell_texture_deffer,black_cell_texture_deffer,white_cell_hover_texture_deffer,black_cell_hover_texture_deffer,
                     map_texture_deffer, white_piece_texture_deffer, black_piece_texture_deffer
