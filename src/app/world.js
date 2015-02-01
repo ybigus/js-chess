@@ -66,8 +66,9 @@ var world=function(){
             var platformMaterial = new THREE.MeshLambertMaterial({map: textures['chess_board_texture']});
             var platform = new THREE.Mesh(chessboard, platformMaterial);
             platform.position.x = -175;
-            platform.position.y = -1;
+            platform.position.y = -3;
             platform.position.z = -175;
+            platform.geometry.computeVertexNormals();
             scene.add(platform);
 
 			for(var i=0; i<8; i++){
