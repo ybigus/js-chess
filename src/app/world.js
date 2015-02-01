@@ -63,7 +63,7 @@ var world=function(){
             //chessboard
             //textures['chess_board'].magFilter = THREE.NearestFilter;
             //textures['chess_board'].minFilter = THREE.LinearMipMapLinearFilter;
-            var platformMaterial = new THREE.MeshLambertMaterial({map: textures['chess_board_texture']});
+            var platformMaterial = new THREE.MeshPhongMaterial({map: textures['chess_board_texture'], specularMap: textures['chess_board_specular_texture'], normalMap: textures['chess_board_normal_texture']});
             var platform = new THREE.Mesh(chessboard, platformMaterial);
             platform.position.x = -175;
             platform.position.y = -3;
@@ -318,6 +318,8 @@ var world=function(){
 			var king_deffer = load_geometry('king');
             var board_deffer = load_board();
             var chess_board_texture_deffer = load_texture('chess_board_texture', 'chessboard.jpg');
+            var chess_board_specular_texture_deffer = load_texture('chess_board_specular_texture', 'chessboard-specular.jpg');
+            var chess_board_normal_texture_deffer = load_texture('chess_board_normal_texture', 'chessbord-normal.jpg');
             var white_cell_texture_deffer = load_texture('white_cell','white_cell.jpg');
             var black_cell_texture_deffer = load_texture('black_cell','black_cell.jpg');
             var white_cell_hover_texture_deffer = load_texture('white_cell_hover','white_cell_hover.jpg');
@@ -349,7 +351,7 @@ var world=function(){
 
 			$.when(pawn_deffer, rook_deffer, knight_deffer, bishop_deffer, queen_deffer, king_deffer, board_deffer, chess_board_texture_deffer,
                     white_cell_texture_deffer,black_cell_texture_deffer,white_cell_hover_texture_deffer,black_cell_hover_texture_deffer,
-                    map_texture_deffer, white_piece_texture_deffer, black_piece_texture_deffer
+                    map_texture_deffer, white_piece_texture_deffer, black_piece_texture_deffer, chess_board_specular_texture_deffer, chess_board_normal_texture_deffer
                 )
                 .done(function(){
                     if(is_multiplayer){
