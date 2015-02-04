@@ -6,7 +6,7 @@ var board;
 var is_multiplayer = false, opponent_ready = false;
 var game_finished;
 
-var renderer, scene, camera, light, chessboard;
+var renderer, scene, camera, light, chessboard, cubeCamera;
 var cells = [], pieces_list = [], pieces_models = {};
 var textures = {};
 var angle = 0;
@@ -47,7 +47,7 @@ var world=function(){
 			renderer = new THREE.WebGLRenderer({ antialias: true });
 			camera = new THREE.PerspectiveCamera(view_angle, aspect, near, far);
 			scene = new THREE.Scene();
-			scene.add(camera);
+            scene.add(camera);
             camera.position.set(camera_position.x, camera_position.y, camera_position.z);
 			camera.lookAt(new THREE.Vector3(board_center.x, board_center.y, board_center.z));
 
@@ -61,9 +61,11 @@ var world=function(){
             background.position.y = 0;
             background.position.z = -500;
             //chessboard
-            //textures['chess_board'].magFilter = THREE.NearestFilter;
-            //textures['chess_board'].minFilter = THREE.LinearMipMapLinearFilter;
-            var platformMaterial = new THREE.MeshPhongMaterial({map: textures['chess_board_texture'], specularMap: textures['chess_board_specular_texture'], normalMap: textures['chess_board_normal_texture']});
+            var platformMaterial = new THREE.MeshPhongMaterial({
+                map: textures['chess_board_texture'],
+                specularMap: textures['chess_board_specular_texture'],
+                normalMap: textures['chess_board_normal_texture']
+            });
             var platform = new THREE.Mesh(chessboard, platformMaterial);
             platform.position.x = -175;
             platform.position.y = -3;
@@ -71,13 +73,18 @@ var world=function(){
             platform.geometry.computeVertexNormals();
             scene.add(platform);
 
-			for(var i=0; i<8; i++){
+            //reflection
+            cubeCamera = new THREEx.CubeCamera(platform);
+            scene.add(cubeCamera.object3d);
+
+            for(var i=0; i<8; i++){
 				var isWhite = i % 2 != 0;
 				for(var j=0; j<8; j++){
 					var cellGeometry = new THREE.BoxGeometry(cell_size,1,cell_size);
                     //var currentColor = isWhite ? white_cell_color : black_cell_color;
                     var currentColor = isWhite ? textures['white_cell'] : textures['black_cell'];
 					var cellMaterial = new THREE.MeshLambertMaterial({map: currentColor});
+                    cellMaterial.envMap = cubeCamera.textureCube;
 					var cell = new THREE.Mesh(cellGeometry, cellMaterial);
 					cell.x = i;
 					cell.y = j;
@@ -163,7 +170,6 @@ var world=function(){
 
 			var render = function(){
 				requestAnimationFrame(render);
-
 				camera.lookAt(new THREE.Vector3(board_center.x, board_center.y, board_center.z));
 
 				var mouse3D = new THREE.Vector3(mouse.x, mouse.y, 0.5);
@@ -187,7 +193,7 @@ var world=function(){
                     intersects[0].object.material.map = intersects[0].object.isWhite ? textures['white_cell_hover'] : textures['black_cell_hover'];
 		            intersects[0].object.isHovered = true;
 		        }
-
+                cubeCamera.update(renderer, scene)
 				renderer.render(scene, camera);
 			}
 			render();
