@@ -155,7 +155,7 @@ var world=function(){
                         var result = $this.move(x, y, newX, newY);
                         if(result){
                             if(is_multiplayer){
-                                network().move(x, y, newX, newY);
+                                network.move(x, y, newX, newY);
                             }
                             cells[selected].isSelected = false;
                         }
@@ -362,7 +362,13 @@ var world=function(){
                     }
                     $this.initWorld();
                     if(is_multiplayer){
-                        network().init(game_id);
+                        network.init(game_id);
+                        $('.draw').click(function(e){
+                            e.preventDefault();
+                            if(user_side == current){
+                                network.offer_draw();
+                            }
+                        })
                     }
 			});
 		},		
