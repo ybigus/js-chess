@@ -6,7 +6,7 @@ var board;
 var is_multiplayer = false, opponent_ready = false;
 var game_finished;
 
-var renderer, scene, camera, light, chessboard, cubeCamera;
+var renderer, scene, camera, light, chessboard;
 var cells = [], pieces_list = [], pieces_models = {};
 var textures = {};
 var angle = 0;
@@ -73,10 +73,6 @@ var world=function(){
             platform.geometry.computeVertexNormals();
             scene.add(platform);
 
-            //reflection
-            cubeCamera = new THREEx.CubeCamera(platform);
-            scene.add(cubeCamera.object3d);
-
             for(var i=0; i<8; i++){
 				var isWhite = i % 2 != 0;
 				for(var j=0; j<8; j++){
@@ -84,7 +80,6 @@ var world=function(){
                     //var currentColor = isWhite ? white_cell_color : black_cell_color;
                     var currentColor = isWhite ? textures['white_cell'] : textures['black_cell'];
 					var cellMaterial = new THREE.MeshLambertMaterial({map: currentColor});
-                    cellMaterial.envMap = cubeCamera.textureCube;
 					var cell = new THREE.Mesh(cellGeometry, cellMaterial);
 					cell.x = i;
 					cell.y = j;
@@ -193,7 +188,6 @@ var world=function(){
                     intersects[0].object.material.map = intersects[0].object.isWhite ? textures['white_cell_hover'] : textures['black_cell_hover'];
 		            intersects[0].object.isHovered = true;
 		        }
-                cubeCamera.update(renderer, scene)
 				renderer.render(scene, camera);
 			}
 			render();
