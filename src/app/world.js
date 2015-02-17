@@ -203,7 +203,7 @@ var world=function(){
 		},
         move: function(x,y,newX,newY){
             var $this = this;
-            var result = game().move(x, y, newX, newY);
+            var result = game.move(x, y, newX, newY);
             if(result.result){
                 showMessage(messages.EMPTY);
                 //destroy enemy
@@ -419,4 +419,4 @@ var world=function(){
             return null;
         }
 	}
-}
+}();
