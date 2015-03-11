@@ -23,6 +23,12 @@ io.on('connection', function(socket){
     socket.on('move', function(msg){
         socket.broadcast.to(room_id).emit('move', msg);
     });
+    socket.on('draw_offer', function(msg){
+        socket.broadcast.to(room_id).emit('draw_offer', msg);
+    });
+    socket.on('draw', function(msg){
+        socket.broadcast.to(room_id).emit('draw', msg);
+    });
     socket.on('disconnect', function(){
         socket.broadcast.to(room_id).emit('game_finished', {"result": true, "draw": false});
     });

@@ -21,7 +21,7 @@ var game=function(){
 			var castling = false;
 			var transform = false;
 			
-			var available_moves = pieces().getAvailableMoves(x, y, is_king_safe);
+			var available_moves = pieces.getAvailableMoves(x, y, is_king_safe);
 			var is_available = _.find(available_moves, function(cell){
 				return cell.x == newX && cell.y == newY;
 			});
@@ -107,7 +107,7 @@ var game=function(){
 			for(var x=0; x<board.length; x++){
 				for(var y=0; y<board[x].length; y++){
 					if(board[x][y] != null && board[x][y].color == current){
-						var available_moves = pieces().getAvailableMoves(x,y, is_king_save);
+						var available_moves = pieces.getAvailableMoves(x,y, is_king_save);
                         
                         for(var i=0; i<available_moves.length; i++){
                             var from_cell = board[x][y];
@@ -132,7 +132,7 @@ var game=function(){
 			for(var x=0; x<board.length; x++){
 				for(var y=0; y<board[x].length; y++){
 					if(board[x][y] != null && board[x][y].color == opponent){
-						var moves = pieces().getAvailableMoves(x,y);
+						var moves = pieces.getAvailableMoves(x,y);
 						var does_king_under_atack = _.find(moves,function(cell){
 							return board[cell.x][cell.y] != null && board[cell.x][cell.y].piece == 'king' && board[cell.x][cell.y].color == current;
 						});
@@ -145,4 +145,4 @@ var game=function(){
 			return true;
 		}
 	}
-};
+}();

@@ -23,12 +23,28 @@
             padding: 0px 10px;
         }
 
+        .draw{
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            display: block;
+            background-color: #ff0000;
+            line-height: 20px;
+            text-align: center;
+            padding: 0px 10px;
+            border-radius: 5px;
+            color: #fff;
+            text-decoration: none;
+            display: none;
+        }
+
 	</style>
 </head>
 <body>
 	<div id="chess"></div>
     <div id="appBar">
         <div class="alerts"></div>
+        <a href="#" class="draw">Offer Draw</a>
     </div>
 
 
@@ -128,7 +144,6 @@
 	<script type="text/javascript" src="lib/jquery.js"></script>
 	<script type="text/javascript" src="lib/underscore.js"></script>
 	<script type="text/javascript" src="lib/three.js"></script>
-    <script type="text/javascript" src="lib/threex.cubecamera.js"></script>
   	
 	<!--<script type="text/javascript" src="app/app.min.js"></script>  	-->
     <script type="text/javascript" src="app/GlassShader.js"></script>
@@ -139,7 +154,7 @@
 	<script type="text/javascript" src="app/world.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function(){
-			world().loadModels();
+			world.loadModels();
 		});
 	</script>
 </body>

@@ -14,6 +14,8 @@ var messages = {
     MATE: "Check and mate!",
     STALEMATE: "Stalemate",
 
+    DRAW_OFFER: "Your opponent offer draw, accept?",
+    DRAW: "Draw",
     YOU_WIN: "Opponent disconnected. You win"
 }
 

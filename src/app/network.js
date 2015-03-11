@@ -19,14 +19,29 @@ var network=function(){
                 }
             });
             socket.on('start', function(msg){
-                showMessage(messages.EMPTY);
+                if(user_side == 'w'){
+                    showMessage(messages.EMPTY);
+                }
                 opponent_ready = true;
+                $('.draw').show();
             });
             socket.on('move', function(msg){
                 world().move(msg.x, msg.y, msg.newX, msg.newY);
             });
+            socket.on('draw_offer', function(msg){
+                if(confirm(messages.DRAW_OFFER)){
+                    showMessage(messages.DRAW);
+                    game_finished = true;
+                    socket.emit('draw');
+                }
+            });
+            socket.on('draw', function(msg){
+                showMessage(messages.DRAW);
+                game_finished = true;
+            });
             socket.on('game_finished', function(msg){
                 if(msg.result){
+                    game_finished = true;
                     showMessage(messages.YOU_WIN);
                     socket.disconnect();
                 }
@@ -37,6 +52,9 @@ var network=function(){
                 showMessage(messages.OPPONENTS_TURN);
             }
             socket.emit('move', {x:x, y:y, newX:newX, newY:newY});
+        },
+        offer_draw: function(){
+            socket.emit('draw_offer');
         }
     }
-}
+}();

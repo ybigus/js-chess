@@ -47,7 +47,7 @@ var world=function(){
 			renderer = new THREE.WebGLRenderer({ antialias: true });
 			camera = new THREE.PerspectiveCamera(view_angle, aspect, near, far);
 			scene = new THREE.Scene();
-			scene.add(camera);
+            scene.add(camera);
             camera.position.set(camera_position.x, camera_position.y, camera_position.z);
 			camera.lookAt(new THREE.Vector3(board_center.x, board_center.y, board_center.z));
 
@@ -61,9 +61,11 @@ var world=function(){
             background.position.y = 0;
             background.position.z = -500;
             //chessboard
-            //textures['chess_board'].magFilter = THREE.NearestFilter;
-            //textures['chess_board'].minFilter = THREE.LinearMipMapLinearFilter;
-            var platformMaterial = new THREE.MeshPhongMaterial({map: textures['chess_board_texture'], specularMap: textures['chess_board_specular_texture'], normalMap: textures['chess_board_normal_texture']});
+            var platformMaterial = new THREE.MeshPhongMaterial({
+                map: textures['chess_board_texture'],
+                specularMap: textures['chess_board_specular_texture'],
+                normalMap: textures['chess_board_normal_texture']
+            });
             var platform = new THREE.Mesh(chessboard, platformMaterial);
             platform.position.x = -175;
             platform.position.y = -3;
@@ -71,7 +73,7 @@ var world=function(){
             platform.geometry.computeVertexNormals();
             scene.add(platform);
 
-			for(var i=0; i<8; i++){
+            for(var i=0; i<8; i++){
 				var isWhite = i % 2 != 0;
 				for(var j=0; j<8; j++){
 					var cellGeometry = new THREE.BoxGeometry(cell_size,1,cell_size);
@@ -153,7 +155,7 @@ var world=function(){
                         var result = $this.move(x, y, newX, newY);
                         if(result){
                             if(is_multiplayer){
-                                network().move(x, y, newX, newY);
+                                network.move(x, y, newX, newY);
                             }
                             cells[selected].isSelected = false;
                         }
@@ -163,7 +165,6 @@ var world=function(){
 
 			var render = function(){
 				requestAnimationFrame(render);
-
 				camera.lookAt(new THREE.Vector3(board_center.x, board_center.y, board_center.z));
 
 				var mouse3D = new THREE.Vector3(mouse.x, mouse.y, 0.5);
@@ -187,7 +188,6 @@ var world=function(){
                     intersects[0].object.material.map = intersects[0].object.isWhite ? textures['white_cell_hover'] : textures['black_cell_hover'];
 		            intersects[0].object.isHovered = true;
 		        }
-
 				renderer.render(scene, camera);
 			}
 			render();
@@ -203,7 +203,7 @@ var world=function(){
 		},
         move: function(x,y,newX,newY){
             var $this = this;
-            var result = game().move(x, y, newX, newY);
+            var result = game.move(x, y, newX, newY);
             if(result.result){
                 showMessage(messages.EMPTY);
                 //destroy enemy
@@ -362,7 +362,13 @@ var world=function(){
                     }
                     $this.initWorld();
                     if(is_multiplayer){
-                        network().init(game_id);
+                        network.init(game_id);
+                        $('.draw').click(function(e){
+                            e.preventDefault();
+                            if(user_side == current){
+                                network.offer_draw();
+                            }
+                        })
                     }
 			});
 		},		
@@ -413,4 +419,4 @@ var world=function(){
             return null;
         }
 	}
-}
+}();

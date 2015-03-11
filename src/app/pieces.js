@@ -148,4 +148,4 @@ var pieces = function(){
 			return availableMoves;
 		}		
 	}
-}
+}();
