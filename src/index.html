@@ -38,7 +38,7 @@
             $('.start-game').attr('href',$('.start-game').attr('href')+'?id='+guid());
 		});
         function guid(){
-            var chars = 'acdefhiklmnoqrstuvwxyz';
+            var chars = 'abcdefghijklmnopqrstuvwxyz';
             var numbers = '0123456789';
             str = getRandomChars(chars) + getRandomChars(numbers);
             return shuffle(str.split('')).join('');

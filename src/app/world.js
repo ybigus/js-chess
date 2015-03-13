@@ -45,6 +45,7 @@ var world=function(){
             controls = new THREE.OrbitControls( camera );
             //controls.damping = 0.2;
             controls.maxPolarAngle = Math.PI/2;
+            controls.maxDistance = 1500;
 
             scene = new THREE.Scene();
             scene.add(camera);
@@ -103,30 +104,30 @@ var world=function(){
 				mouse.y = - ( event.clientY / full_height() ) * 2 + 1;
 			});
 
-            $(document).mousedown(function(event){
-				var selected = -1, hovered = -1;
-				for(var i=0; i<cells.length; i++){
-					if(cells[i].isSelected){
-						selected = i;
-					}
-					if(cells[i].isHovered){
-						hovered = i;	
-					}
-				}
-				if(hovered != -1){
-					if(
+            var make_move = function(){
+                var selected = -1, hovered = -1;
+                for(var i=0; i<cells.length; i++){
+                    if(cells[i].isSelected){
+                        selected = i;
+                    }
+                    if(cells[i].isHovered){
+                        hovered = i;
+                    }
+                }
+                if(hovered != -1){
+                    if(
                         (!is_multiplayer && board[cells[hovered].x][cells[hovered].y] != null && board[cells[hovered].x][cells[hovered].y].color == current ) ||
-                        (is_multiplayer && board[cells[hovered].x][cells[hovered].y] != null && board[cells[hovered].x][cells[hovered].y].color == user_side )
-                    ){
+                            (is_multiplayer && board[cells[hovered].x][cells[hovered].y] != null && board[cells[hovered].x][cells[hovered].y].color == user_side )
+                        ){
                         _.each(cells, function(cell){
                             cell.isSelected = false;
                         });
-						cells[hovered].isSelected = true;
-					}
-					else{
+                        cells[hovered].isSelected = true;
+                    }
+                    else{
                         if (game_finished || (is_multiplayer && (!opponent_ready || user_side != current))) return;
-						var x = parseInt(selected / 8), y = selected - x * 8;
-						var newX = parseInt(hovered / 8), newY = hovered - newX * 8;
+                        var x = parseInt(selected / 8), y = selected - x * 8;
+                        var newX = parseInt(hovered / 8), newY = hovered - newX * 8;
                         var result = $this.move(x, y, newX, newY);
                         if(result){
                             if(is_multiplayer){
@@ -134,9 +135,19 @@ var world=function(){
                             }
                             cells[selected].isSelected = false;
                         }
-					}
-				}
+                    }
+                }
+            };
+            $(document).mousedown(function(event){
+                make_move();
 			});
+
+            $(document).on('touchstart',function(event){
+                var touch = event.originalEvent.changedTouches[0];
+                mouse.x = ( touch.pageX / full_width() ) * 2 - 1;
+                mouse.y = - ( touch.pageY / full_height() ) * 2 + 1;
+                make_move();
+            });
 
 			var render = function(){
 				requestAnimationFrame(render);
