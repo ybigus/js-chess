@@ -7,12 +7,12 @@ var is_multiplayer = false, opponent_ready = false;
 var game_finished;
 
 var renderer, scene, camera, light, chessboard;
-var cells = [], pieces_list = [], pieces_models = {};
+var cells = [], pieces_list = [], pieces_models = {}, moves_history=[];
+var board_coords = "abcdefgh";
 var textures = {};
 var angle = 0;
 
 /*WORLD SETTINGS*/
-//var camera_position = {x: 193, y: 340, z: -269};
 var camera_position = {x: 200, y: 340, z: -200};
 var light_position = {x: -200, y: 340, z: -200};
 var board_center = {x:-200, y: 0, z: -200};
@@ -21,11 +21,6 @@ var cell_size = 50;
 /*COLOURS*/
 var bg_color = 0x333366;
 var light_color = 0xFFFFFF;
-//var white_piece_color = 0xFFFFFF;
-//var black_piece_color = 0x422A10;
-/*var white_cell_color = 0xDDC5A0;
-var black_cell_color = 0x9D7D40;
-var hover_cell_color = 0xB1FB98;*/
 
 var background;
 
@@ -103,32 +98,7 @@ var world=function(){
 				mouse.y = - ( event.clientY / full_height() ) * 2 + 1;
 			});
 
-            $(document).keydown(function(e){
-                switch(e.which){
-                    case 65:
-                        angle += 5;
-                        camera.position.x = -camera_position.x + cell_size * 8 * Math.cos(Math.PI * angle / 180);
-                        camera.position.z = -camera_position.x + cell_size * 8 * Math.sin(Math.PI * angle / 180);
-                        break;
-                    case 68:
-                        angle -= 5;
-                        camera.position.x = -camera_position.x + cell_size * 8 * Math.cos(Math.PI * angle / 180);
-                        camera.position.z = -camera_position.x + cell_size * 8 * Math.sin(Math.PI * angle / 180);
-                        break;
-                    case 87:
-                        if(camera.position.y < 540){
-                            camera.position.y += 10;
-                        }
-                        break;
-                    case 83:
-                        if(camera.position.y > 60){
-                            camera.position.y -= 10;
-                        }
-                        break;
-                }
-            });
-
-			$(document).mousedown(function(event){
+            $(document).mousedown(function(event){
 				var selected = -1, hovered = -1;
 				for(var i=0; i<cells.length; i++){
 					if(cells[i].isSelected){
@@ -162,6 +132,31 @@ var world=function(){
 					}
 				}
 			});
+
+            $(document).keydown(function(e){
+                switch(e.which){
+                    case 65:
+                        angle += 5;
+                        camera.position.x = -camera_position.x + cell_size * 8 * Math.cos(Math.PI * angle / 180);
+                        camera.position.z = -camera_position.x + cell_size * 8 * Math.sin(Math.PI * angle / 180);
+                        break;
+                    case 68:
+                        angle -= 5;
+                        camera.position.x = -camera_position.x + cell_size * 8 * Math.cos(Math.PI * angle / 180);
+                        camera.position.z = -camera_position.x + cell_size * 8 * Math.sin(Math.PI * angle / 180);
+                        break;
+                    case 87:
+                        if(camera.position.y < 540){
+                            camera.position.y += 10;
+                        }
+                        break;
+                    case 83:
+                        if(camera.position.y > 60){
+                            camera.position.y -= 10;
+                        }
+                        break;
+                }
+            });
 
 			var render = function(){
 				requestAnimationFrame(render);
@@ -205,6 +200,7 @@ var world=function(){
             var $this = this;
             var result = game.move(x, y, newX, newY);
             if(result.result){
+                $this.addToHistory(x, y, newX, newY, result.check,board[newX][newY].piece, board[newX][newY].color);
                 showMessage(messages.EMPTY);
                 //destroy enemy
                 if(result.kill){
@@ -264,9 +260,18 @@ var world=function(){
             }
             return result.result;
         },
+        addToHistory: function(x, y, newX, newY, isCheck, piece, color){
+            moves_history.push({
+                piece: piece,
+                color: color,
+                x: x + 1,
+                y: board_coords[y],
+                newX: newX+1,
+                newY: board_coords[newY],
+                isCheck: isCheck
+            });
+        },
         buildPiece: function(x,y){
-            //var pieceColor = board[x][y].color == 'w' ? white_piece_color : black_piece_color;
-            //var pieceMaterial = new THREE.MeshPhongMaterial({color: pieceColor});
             var pieceMaterial = new THREE.ShaderMaterial(THREE.GlassShader(textures['map_texture'], board[x][y].color == 'w' ? textures['white_piece_texture'] : textures['black_piece_texture']));
             var piece = new THREE.Mesh(pieces_models[board[x][y].piece], pieceMaterial);
             piece.position.x = -x * cell_size;

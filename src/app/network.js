@@ -26,7 +26,7 @@ var network=function(){
                 $('.draw').show();
             });
             socket.on('move', function(msg){
-                world().move(msg.x, msg.y, msg.newX, msg.newY);
+                world.move(msg.x, msg.y, msg.newX, msg.newY);
             });
             socket.on('draw_offer', function(msg){
                 if(confirm(messages.DRAW_OFFER)){
