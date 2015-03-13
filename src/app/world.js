@@ -6,7 +6,7 @@ var board;
 var is_multiplayer = false, opponent_ready = false;
 var game_finished;
 
-var renderer, scene, camera, light, chessboard;
+var renderer, scene, camera, light, chessboard, controls;
 var cells = [], pieces_list = [], pieces_models = {}, moves_history=[];
 var board_coords = "abcdefgh";
 var textures = {};
@@ -41,7 +41,12 @@ var world=function(){
 			var mouse = { x: 0, y: 0 };
 			renderer = new THREE.WebGLRenderer({ antialias: true });
 			camera = new THREE.PerspectiveCamera(view_angle, aspect, near, far);
-			scene = new THREE.Scene();
+
+            controls = new THREE.OrbitControls( camera );
+            //controls.damping = 0.2;
+            controls.maxPolarAngle = Math.PI/2;
+
+            scene = new THREE.Scene();
             scene.add(camera);
             camera.position.set(camera_position.x, camera_position.y, camera_position.z);
 			camera.lookAt(new THREE.Vector3(board_center.x, board_center.y, board_center.z));
@@ -133,33 +138,9 @@ var world=function(){
 				}
 			});
 
-            $(document).keydown(function(e){
-                switch(e.which){
-                    case 65:
-                        angle += 5;
-                        camera.position.x = -camera_position.x + cell_size * 8 * Math.cos(Math.PI * angle / 180);
-                        camera.position.z = -camera_position.x + cell_size * 8 * Math.sin(Math.PI * angle / 180);
-                        break;
-                    case 68:
-                        angle -= 5;
-                        camera.position.x = -camera_position.x + cell_size * 8 * Math.cos(Math.PI * angle / 180);
-                        camera.position.z = -camera_position.x + cell_size * 8 * Math.sin(Math.PI * angle / 180);
-                        break;
-                    case 87:
-                        if(camera.position.y < 540){
-                            camera.position.y += 10;
-                        }
-                        break;
-                    case 83:
-                        if(camera.position.y > 60){
-                            camera.position.y -= 10;
-                        }
-                        break;
-                }
-            });
-
 			var render = function(){
 				requestAnimationFrame(render);
+                controls.update();
 				camera.lookAt(new THREE.Vector3(board_center.x, board_center.y, board_center.z));
 
 				var mouse3D = new THREE.Vector3(mouse.x, mouse.y, 0.5);
