@@ -43,7 +43,6 @@ var world=function(){
 			camera = new THREE.PerspectiveCamera(view_angle, aspect, near, far);
 
             controls = new THREE.OrbitControls( camera );
-            //controls.damping = 0.2;
             controls.maxPolarAngle = Math.PI/2;
             controls.maxDistance = 1500;
 
@@ -78,7 +77,6 @@ var world=function(){
 				var isWhite = i % 2 != 0;
 				for(var j=0; j<8; j++){
 					var cellGeometry = new THREE.BoxGeometry(cell_size,1,cell_size);
-                    //var currentColor = isWhite ? white_cell_color : black_cell_color;
                     var currentColor = isWhite ? textures['white_cell'] : textures['black_cell'];
 					var cellMaterial = new THREE.MeshLambertMaterial({map: currentColor});
 					var cell = new THREE.Mesh(cellGeometry, cellMaterial);
@@ -161,17 +159,14 @@ var world=function(){
         		var raycaster = new THREE.Raycaster(camera.position, mouse3D);
 				var intersects = raycaster.intersectObjects(cells);
 				for(var i=0; i<cells.length; i++){
-					//var currentColor = cells[i].isWhite ? white_cell_color : black_cell_color;
                     var currentColor = cells[i].isWhite ? textures['white_cell'] : textures['black_cell'];
 
 					if(!cells[i].isSelected){
-						//cells[i].material.color.setHex(currentColor);
                         cells[i].material.map = currentColor;
 					}
 					cells[i].isHovered = false;
 				}
 		        if (intersects.length > 0) {
-		            //intersects[0].object.material.color.setHex(hover_cell_color);
                     intersects[0].object.material.map = intersects[0].object.isWhite ? textures['white_cell_hover'] : textures['black_cell_hover'];
 		            intersects[0].object.isHovered = true;
 		        }
@@ -307,23 +302,24 @@ var world=function(){
                 });
                 return d.promise();
             }
-			var pawn_deffer = load_geometry('pawn');
-			var rook_deffer = load_geometry('rook');
-			var knight_deffer = load_geometry('knight');
-			var bishop_deffer = load_geometry('bishop');
-			var queen_deffer = load_geometry('queen');
-			var king_deffer = load_geometry('king');
-            var board_deffer = load_board();
-            var chess_board_texture_deffer = load_texture('chess_board_texture', 'chessboard.jpg');
-            var chess_board_specular_texture_deffer = load_texture('chess_board_specular_texture', 'chessboard-specular.jpg');
-            var chess_board_normal_texture_deffer = load_texture('chess_board_normal_texture', 'chessbord-normal.jpg');
-            var white_cell_texture_deffer = load_texture('white_cell','white_cell.jpg');
-            var black_cell_texture_deffer = load_texture('black_cell','black_cell.jpg');
-            var white_cell_hover_texture_deffer = load_texture('white_cell_hover','white_cell_hover.jpg');
-            var black_cell_hover_texture_deffer = load_texture('black_cell_hover','black_cell_hover.jpg');
-            var map_texture_deffer = load_texture('map_texture','map.jpg');
-            var white_piece_texture_deffer = load_texture('white_piece_texture','white_piece.jpg');
-            var black_piece_texture_deffer = load_texture('black_piece_texture','black_piece.jpg');
+            var deffered_params = [];
+            deffered_params.push(load_geometry('pawn'));
+            deffered_params.push(load_geometry('rook'));
+            deffered_params.push(load_geometry('knight'));
+            deffered_params.push(load_geometry('bishop'));
+            deffered_params.push(load_geometry('queen'));
+            deffered_params.push(load_geometry('king'));
+            deffered_params.push(load_board());
+            deffered_params.push(load_texture('chess_board_texture', 'chessboard.jpg'));
+            deffered_params.push(load_texture('chess_board_specular_texture', 'chessboard-specular.jpg'));
+            deffered_params.push(load_texture('chess_board_normal_texture', 'chessbord-normal.jpg'));
+            deffered_params.push(load_texture('white_cell','white_cell.jpg'));
+            deffered_params.push(load_texture('black_cell','black_cell.jpg'));
+            deffered_params.push(load_texture('white_cell_hover','white_cell_hover.jpg'));
+            deffered_params.push(load_texture('black_cell_hover','black_cell_hover.jpg'));
+            deffered_params.push(load_texture('map_texture','map.jpg'));
+            deffered_params.push(load_texture('white_piece_texture','white_piece.jpg'));
+            deffered_params.push(load_texture('black_piece_texture','black_piece.jpg'));
 			var $this = this;
 
             var urls = [
@@ -346,27 +342,23 @@ var world=function(){
                 side: THREE.BackSide
             } );
 
-			$.when(pawn_deffer, rook_deffer, knight_deffer, bishop_deffer, queen_deffer, king_deffer, board_deffer, chess_board_texture_deffer,
-                    white_cell_texture_deffer,black_cell_texture_deffer,white_cell_hover_texture_deffer,black_cell_hover_texture_deffer,
-                    map_texture_deffer, white_piece_texture_deffer, black_piece_texture_deffer, chess_board_specular_texture_deffer, chess_board_normal_texture_deffer
-                )
-                .done(function(){
-                    if(is_multiplayer){
-                        showMessage(messages.WAITING_OPPONENT);
-                    }
-                    else{
-                        showMessage(messages.EMPTY);
-                    }
-                    $this.initWorld();
-                    if(is_multiplayer){
-                        network.init(game_id);
-                        $('.draw').click(function(e){
-                            e.preventDefault();
-                            if(user_side == current){
-                                network.offer_draw();
-                            }
-                        })
-                    }
+			$.when.apply(this, deffered_params).done(function(){
+                if(is_multiplayer){
+                    showMessage(messages.WAITING_OPPONENT);
+                }
+                else{
+                    showMessage(messages.EMPTY);
+                }
+                $this.initWorld();
+                if(is_multiplayer){
+                    network.init(game_id);
+                    $('.draw').click(function(e){
+                        e.preventDefault();
+                        if(user_side == current){
+                            network.offer_draw();
+                        }
+                    })
+                }
 			});
 		},		
 		startGame: function(){
